@@ -28,7 +28,7 @@ class DeletedFile:
         ]
 
 
-class Cdirectory:
+class Directory:
     path: str
     expiry_in_minutes: int = 0
     cleaning_type: str
@@ -39,7 +39,7 @@ class Cdirectory:
         self.cleaning_type = type
 
 
-class Setting:
+class Configuration:
     db_location: str
     log_file_location: str
 
@@ -80,19 +80,19 @@ def report_deletion(deleted_files: list[DeletedFile]) -> None:
     for e in deleted_files:
         rows.append(e.to_array())
 
-    if global_setting.log_file_location != '':
+    if configuration.log_file_location != '':
         try:
-            with open(global_setting.log_file_location, 'a+', encoding='UTF8') as file:
+            with open(configuration.log_file_location, 'a+', encoding='UTF8') as file:
                 writer = csv.writer(file)
                 writer.writerows(rows)
         except FileNotFoundError:
-            print("FileNotFoundError! Can't write in log file at:", global_setting.log_file_location)
+            print("FileNotFoundError! Can't write in log file at:", configuration.log_file_location)
         except:
             print("Error! Something went wrong during writing in log file.")
 
 
-def clean_directory(c_directory: Cdirectory) -> None:
-    # Get list of files/directories found inside the Directory
+def clean_directory(c_directory: Directory) -> None:
+    # Get list of files/directories found in the directory
     # Delete them Directory allows :
     # - f for file deletion
     # - d for directory deletion
@@ -124,22 +124,22 @@ def clean_directory(c_directory: Cdirectory) -> None:
     report_deletion(deletion_list)
 
 
-def get_directories_list() -> list[Cdirectory]:
+def get_directories_list() -> list[Directory]:
     c_directories = []
-    if (global_setting.db_location != '') & (os.path.exists(global_setting.db_location)):
+    if (configuration.db_location != '') & (os.path.exists(configuration.db_location)):
         print("* Directories DB found")
         try:
-            with open(global_setting.db_location, 'r') as reading:
+            with open(configuration.db_location, 'r') as reading:
                 directories = json.load(reading)
             for d in directories:
                 if os.path.lexists(d['path']) & os.path.isdir(d['path']):
-                    c_directory = Cdirectory(d['path'], d['expiry'], d['type'])
+                    c_directory = Directory(d['path'], d['expiry'], d['type'])
                     c_directories.append(c_directory)
                     print("** Found directory:", c_directory.path)
                 else:
                     print("** Skipping directory: ", d['path'])
         except FileNotFoundError:
-            print("FileNotFoundError. Failed to find db location at:", global_setting.db_location)
+            print("FileNotFoundError. Failed to find db location at:", configuration.db_location)
         except:
             print("Error! Something went wrong during writing in log file.")
     else:
@@ -159,26 +159,26 @@ def start() -> None:
     print("Bye Bye!")
 
 
-def get_settings() -> Setting:
+def get_settings() -> Configuration:
     settings_file_path = "settings.json"
-    settings: Setting = None
+    settings: Configuration = None
     if not os.path.lexists(settings_file_path):
         print("* FileNotFoundError: Failed to find settings file located at: " + settings_file_path)
     else:
-        settings = Setting(settings_file_path)
+        settings = Configuration(settings_file_path)
         print("* Configuration file found")
 
     return settings
 
 
-global_setting: Setting
 # Main method
+configuration: Configuration
 if __name__ == '__main__':
     print("**************************")
     print("* DirC: Directory Cleaner")
     print("**************************\n")
     try:
-        global_setting = get_settings()
+        configuration = get_settings()
         start()
     except:
         print("Error: Something went wrong!")
