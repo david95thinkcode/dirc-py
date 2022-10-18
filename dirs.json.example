@@ -1,0 +1,12 @@
+[
+  {
+    "path": "fullpath",
+    "expiry": 20,
+    "type": "f"
+  },
+  {
+    "path": "fullpacth2",
+    "expiry": 1440,
+    "type": "fd"
+  }
+]

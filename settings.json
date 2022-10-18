@@ -1,0 +1,4 @@
+{
+  "db_for_cleaning": "dirs.json",
+  "log_file": "logs.csv"
+}
