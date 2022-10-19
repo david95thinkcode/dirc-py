@@ -5,7 +5,7 @@ The configuration
 
 ## Requirements
 
-- Python version supported : 3.7 or later
+- Python version supported : 3.10 or later
 - A configuration file `settings.json` located in the same directory as the script.
 - A JSON file containing a collection of directories to inspect.
 
